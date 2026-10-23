@@ -15,25 +15,67 @@ public sealed class App : Application
     public static void Main()
     {
         var app = new App();
-        app.DispatcherUnhandledException += (_, e) => { MessageBox.Show("The operation could not be completed. Your saved vault has not been reset.", "Galaxy Keys"); e.Handled = true; };
+        app.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("pack://application:,,,/Theme.xaml") });
+        app.DispatcherUnhandledException += (_, e) => { UI.Message(app.MainWindow, "The operation could not be completed. Your saved vault has not been reset.", "Galaxy Keys"); e.Handled = true; };
         app.Run(new MainWindow());
     }
 }
 
 public static class UI
 {
-    public static readonly Brush Bg = Brush("#10121C"), Panel = Brush("#191D2B"), Muted = Brush("#9AA4BF"), Gold = Brush("#F2C86B"), Text = Brush("#EEF1FA");
+    public static readonly Brush Bg = Brush("#0E111A"), Panel = Brush("#171C29"), Muted = Brush("#A4ADC1"), Text = Brush("#F4F3ED");
+    public static Brush Gold => (Brush)Application.Current.Resources["GalaxyGold"];
     public static Brush Brush(string color) => new SolidColorBrush((Color)ColorConverter.ConvertFromString(color));
     public static TextBlock Label(string value, double size = 14, Brush? color = null) => new() { Text = value, FontSize = size, Foreground = color ?? Text, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 8) };
+    public static System.Windows.Controls.Image Logo(double size) => new() { Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("pack://application:,,,/Assets/galaxy-keys-logo.png")), Width = size, Height = size, Stretch = Stretch.Uniform, HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 0, 12) };
     public static Button Button(string text, RoutedEventHandler click, bool primary = false)
     {
-        var b = new Button { Content = text, Padding = new Thickness(16, 10, 16, 10), Margin = new Thickness(0, 4, 8, 4), Background = primary ? Gold : Brush("#2A3044"), Foreground = primary ? Bg : Text, BorderThickness = new Thickness(0), Cursor = System.Windows.Input.Cursors.Hand, HorizontalContentAlignment = HorizontalAlignment.Center };
+        var b = new Button { Content = text, Margin = new Thickness(0, 4, 8, 4), Background = primary ? Gold : Brush("#202737"), Foreground = primary ? Bg : Text, HorizontalContentAlignment = HorizontalAlignment.Center };
         b.Click += click; return b;
     }
-    public static TextBox Input(string value = "") => new() { Text = value, FontSize = 15, Padding = new Thickness(10), Background = Brush("#111522"), Foreground = Text, BorderBrush = Brush("#3B435E"), CaretBrush = Gold, Margin = new Thickness(0, 0, 0, 16) };
-    public static PasswordBox Password() => new() { FontSize = 15, Padding = new Thickness(10), Background = Brush("#111522"), Foreground = Text, BorderBrush = Brush("#3B435E"), CaretBrush = Gold, Margin = new Thickness(0, 0, 0, 16) };
-    public static Window Dialog(Window owner, string title, double width = 470) => new() { Owner = owner, Title = title, Width = width, SizeToContent = SizeToContent.Height, ResizeMode = ResizeMode.NoResize, Background = Panel, Foreground = Text, WindowStartupLocation = WindowStartupLocation.CenterOwner, ShowInTaskbar = false, MaxHeight = 850 };
-    public static void Error(Window owner, string text) => MessageBox.Show(owner, text, "Galaxy Keys", MessageBoxButton.OK, MessageBoxImage.Warning);
+    public static TextBox Input(string value = "") => new() { Text = value, FontSize = 15, Padding = new Thickness(12), Margin = new Thickness(0, 0, 0, 16) };
+    public static PasswordBox Password() => new() { FontSize = 15, Padding = new Thickness(12), Margin = new Thickness(0, 0, 0, 16) };
+    public static Window Dialog(Window owner, string title, double width = 470)
+    {
+        var window = new Window { Owner = owner, Title = title, Width = width, SizeToContent = SizeToContent.Height, ResizeMode = ResizeMode.NoResize, Background = Panel, Foreground = Text, WindowStartupLocation = WindowStartupLocation.CenterOwner, ShowInTaskbar = false, MaxHeight = 850 };
+        ConfigureWindow(window); return window;
+    }
+    public static void ConfigureWindow(Window window)
+    {
+        window.Style = (Style)Application.Current.Resources["GalaxyWindow"];
+        window.Icon = new System.Windows.Media.Imaging.BitmapImage(new Uri("pack://application:,,,/Assets/galaxy-keys.ico"));
+        System.Windows.Shell.WindowChrome.SetWindowChrome(window, new System.Windows.Shell.WindowChrome
+        {
+            CaptionHeight = 48, CornerRadius = new CornerRadius(20), GlassFrameThickness = new Thickness(0),
+            ResizeBorderThickness = new Thickness(window.ResizeMode == ResizeMode.NoResize ? 0 : 6), UseAeroCaptionButtons = false
+        });
+        window.SourceInitialized += (_, _) =>
+        {
+            try { var dark = 1; DwmSetWindowAttribute(new WindowInteropHelper(window).Handle, 20, ref dark, sizeof(int)); var round = 2; DwmSetWindowAttribute(new WindowInteropHelper(window).Handle, 33, ref round, sizeof(int)); } catch { }
+        };
+        window.Loaded += (_, _) =>
+        {
+            if (window.Template.FindName("GalaxyClose", window) is Button close) close.Click += (_, _) => window.Close();
+            if (window.Template.FindName("GalaxyMinimize", window) is Button minimize) minimize.Click += (_, _) => SystemCommands.MinimizeWindow(window);
+            if (window.Template.FindName("GalaxyMaximize", window) is Button maximize) maximize.Click += (_, _) => { if (window.WindowState == WindowState.Maximized) SystemCommands.RestoreWindow(window); else SystemCommands.MaximizeWindow(window); };
+        };
+    }
+    [System.Runtime.InteropServices.DllImport("dwmapi.dll")]
+    static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
+    public static void Error(Window owner, string text) => Message(owner, text, "Galaxy Keys", MessageBoxButton.OK, MessageBoxImage.Warning);
+    public static MessageBoxResult Message(Window owner, string text, string title, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
+    {
+        var dialog = Dialog(owner, title); var panel = new StackPanel { Margin = new Thickness(28) }; dialog.Content = panel;
+        panel.Children.Add(Logo(54)); panel.Children.Add(Label(text, 15));
+        var row = new WrapPanel { Margin = new Thickness(0, 14, 0, 0) }; var result = MessageBoxResult.Cancel;
+        if (buttons == MessageBoxButton.YesNo)
+        {
+            row.Children.Add(Button("Yes", (_, _) => { result = MessageBoxResult.Yes; dialog.Close(); }, true));
+            row.Children.Add(Button("Cancel", (_, _) => { result = MessageBoxResult.No; dialog.Close(); }));
+        }
+        else row.Children.Add(Button("OK", (_, _) => { result = MessageBoxResult.OK; dialog.Close(); }, true));
+        panel.Children.Add(row); dialog.ShowDialog(); return result;
+    }
 }
 
 public sealed class MainWindow : Window
@@ -46,6 +88,7 @@ public sealed class MainWindow : Window
     DateTime retryAfter;
     int failures;
     string filter = "All items";
+    readonly Dictionary<string, Button> navigation = [];
     TextBox? search;
     ListBox? list;
     StackPanel? detail;
@@ -60,7 +103,7 @@ public sealed class MainWindow : Window
 
     public MainWindow()
     {
-        Title = "Galaxy Keys"; Width = 1120; Height = 760; MinWidth = 900; MinHeight = 620;
+        Title = "Galaxy Keys"; UI.ConfigureWindow(this); Width = 1180; Height = 800; MinWidth = 900; MinHeight = 620;
         Background = UI.Bg; Foreground = UI.Text; FontFamily = new FontFamily("Segoe UI"); FontSize = 14;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
         vault = new Vault(Path.Combine(folder, "vault.gkv"));
@@ -119,9 +162,15 @@ public sealed class MainWindow : Window
     void ShowLocked()
     {
         var create = !File.Exists(vault.Path);
-        var root = new Grid(); var card = new StackPanel { Width = 400, VerticalAlignment = VerticalAlignment.Center };
-        card.Children.Add(UI.Label("✦  GALAXY KEYS", 15, UI.Gold));
-        card.Children.Add(UI.Label(create ? "Your secrets.\nYour computer." : "Welcome back.", 38));
+        var root = new Grid { Margin = new Thickness(28) };
+        root.ColumnDefinitions.Add(new() { Width = new GridLength(1, GridUnitType.Star) }); root.ColumnDefinitions.Add(new() { Width = new GridLength(1, GridUnitType.Star) });
+        var hero = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(40, 0, 24, 0) };
+        hero.Children.Add(UI.Logo(240)); hero.Children.Add(UI.Label("Galaxy Keys", 38, UI.Gold));
+        hero.Children.Add(UI.Label("Your keys. Your universe.", 19)); hero.Children.Add(UI.Label("A private space for your API keys\nand website logins.", 14, UI.Muted));
+        root.Children.Add(hero);
+        var card = new StackPanel { MaxWidth = 410, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(18, 24, 28, 24) }; Grid.SetColumn(card, 1);
+        card.Children.Add(UI.Label("YOUR LOCAL VAULT", 12, UI.Gold));
+        card.Children.Add(UI.Label(create ? "Your secrets.\nYour computer." : "Welcome back.", 34));
         card.Children.Add(UI.Label(create ? "Create your private, encrypted vault. No accounts. No cloud." : "Unlock your local vault to access your keys and logins.", 15, UI.Muted));
         card.Children.Add(UI.Label("Master password")); var password = UI.Password(); card.Children.Add(password);
         PasswordBox? confirm = null;
@@ -162,14 +211,16 @@ public sealed class MainWindow : Window
     }
     void ShowVault()
     {
-        var root = new Grid(); root.ColumnDefinitions.Add(new() { Width = new GridLength(210) }); root.ColumnDefinitions.Add(new() { Width = new GridLength(320) }); root.ColumnDefinitions.Add(new());
+        navigation.Clear();
+        var root = new Grid { Margin = new Thickness(14) }; root.ColumnDefinitions.Add(new() { Width = new GridLength(210) }); root.ColumnDefinitions.Add(new() { Width = new GridLength(320) }); root.ColumnDefinitions.Add(new());
         var sidebar = new DockPanel { Background = UI.Panel, Margin = new Thickness(0, 0, 1, 0) }; Grid.SetColumn(sidebar, 0);
         var foot = new StackPanel { Margin = new Thickness(18) }; DockPanel.SetDock(foot, Dock.Bottom);
         foot.Children.Add(UI.Label("●  Local vault unlocked", 12, UI.Gold));
         foot.Children.Add(UI.Button("Settings & backup", (_, _) => Settings())); foot.Children.Add(UI.Button("Lock vault", (_, _) => Lock())); sidebar.Children.Add(foot);
-        var nav = new StackPanel { Margin = new Thickness(18, 28, 12, 0) }; nav.Children.Add(UI.Label("✦ GALAXY KEYS", 17, UI.Gold)); nav.Children.Add(UI.Label("PRIVATE BY DESIGN", 10, UI.Muted));
-        foreach (var (label, kind) in new[] { ("All items", "All items"), ("API keys", "API Key"), ("Website logins", "Login") }) nav.Children.Add(UI.Button(label, (_, _) => { filter = kind; Refresh(); }));
-        nav.Children.Add(UI.Label("\nEverything stays on\nthis computer.", 12, UI.Muted)); sidebar.Children.Add(nav); root.Children.Add(sidebar);
+        var nav = new StackPanel { Margin = new Thickness(18, 28, 12, 0) }; nav.Children.Add(UI.Logo(72)); nav.Children.Add(UI.Label("Galaxy Keys", 22, UI.Gold)); nav.Children.Add(UI.Label("PRIVATE BY DESIGN", 10, UI.Muted));
+        foreach (var (label, kind) in new[] { ("All items", "All items"), ("API keys", "API Key"), ("Website logins", "Login") }) { var button = UI.Button(label, (_, _) => { filter = kind; Refresh(); }); navigation[kind] = button; nav.Children.Add(button); }
+        nav.Children.Add(UI.Label("\nEverything stays on\nthis computer.", 12, UI.Muted)); sidebar.Children.Add(nav); sidebar.Background = Brushes.Transparent;
+        var sidebarCard = new Border { CornerRadius = new CornerRadius(20), Background = UI.Panel, Child = sidebar }; Grid.SetColumn(sidebarCard, 0); root.Children.Add(sidebarCard);
         var middle = new DockPanel { Margin = new Thickness(22, 28, 20, 20) }; Grid.SetColumn(middle, 1);
         var top = new StackPanel(); DockPanel.SetDock(top, Dock.Top); top.Children.Add(UI.Label("Your vault", 26));
         top.Children.Add(UI.Label("Search name or username", 12, UI.Muted)); search = UI.Input(); search.TextChanged += (_, _) => Refresh(); top.Children.Add(search);
@@ -178,12 +229,19 @@ public sealed class MainWindow : Window
         list = new ListBox { Background = Brushes.Transparent, Foreground = UI.Text, BorderThickness = new Thickness(0), Margin = new Thickness(0, 18, 0, 12), HorizontalContentAlignment = HorizontalAlignment.Stretch };
         list.SelectionChanged += (_, _) => { selected = (list.SelectedItem as ListBoxItem)?.Tag as Entry; ShowDetail(); }; middle.Children.Add(list); root.Children.Add(middle);
         detail = new StackPanel { Margin = new Thickness(30, 40, 30, 20) };
-        var scroll = new ScrollViewer { Content = detail, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Background = UI.Panel }; Grid.SetColumn(scroll, 2); root.Children.Add(scroll);
+        var scroll = new ScrollViewer { Content = detail, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Margin = new Thickness(2) };
+        var detailCard = new Border { CornerRadius = new CornerRadius(20), Background = UI.Panel, Child = scroll }; Grid.SetColumn(detailCard, 2); root.Children.Add(detailCard);
         Content = root; Refresh();
     }
     void Refresh()
     {
         if (list == null || !vault.IsOpen) return;
+        foreach (var (kind, button) in navigation)
+        {
+            button.Background = kind == filter ? (Brush)Application.Current.Resources["GalaxyGoldSoft"] : UI.Brush("#202737");
+            button.BorderBrush = kind == filter ? UI.Gold : UI.Brush("#343D51");
+            button.Foreground = kind == filter ? UI.Gold : UI.Text;
+        }
         var id = selected?.Id; list.Items.Clear();
         foreach (var item in vault.Search(search?.Text.Trim() ?? "", filter))
         {
@@ -198,7 +256,7 @@ public sealed class MainWindow : Window
     void ShowDetail()
     {
         if (detail == null) return; detail.Children.Clear();
-        if (selected == null) { detail.Children.Add(UI.Label("A safe place for\nyour digital keys.", 32)); detail.Children.Add(UI.Label("Select an item or add your first API key or website login.", 15, UI.Muted)); return; }
+        if (selected == null) { detail.Children.Add(UI.Logo(100)); detail.Children.Add(UI.Label("A safe place for\nyour digital keys.", 32)); detail.Children.Add(UI.Label("Select an item or add your first API key or website login.", 15, UI.Muted)); return; }
         var item = selected;
         detail.Children.Add(UI.Label(item.Kind.ToUpperInvariant(), 11, UI.Gold)); detail.Children.Add(UI.Label(item.Name, 30));
         void Field(string label, string value)
@@ -218,7 +276,7 @@ public sealed class MainWindow : Window
         detail.Children.Add(UI.Label("\nUpdated " + item.Updated.ToLocalTime().ToString("g"), 11, UI.Muted));
         var manage = new WrapPanel(); manage.Children.Add(UI.Button("Edit item", (_, _) => Edit(item))); manage.Children.Add(UI.Button("Delete", (_, _) =>
         {
-            if (MessageBox.Show(this, $"Delete ‘{item.Name}’?", "Delete item", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
+            if (UI.Message(this, $"Delete ‘{item.Name}’?", "Delete item", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
             try { vault.Delete(item.Id); selected = null; Refresh(); } catch { UI.Error(this, "Could not save the change. The item has been kept."); }
         })); detail.Children.Add(manage);
     }
@@ -273,7 +331,7 @@ public sealed class MainWindow : Window
             try
             {
                 if (Path.GetFullPath(picker.FileName).StartsWith(Path.GetFullPath(folder) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)) throw new IOException();
-                Vault.AtomicWrite(picker.FileName, File.ReadAllBytes(vault.Path), false); MessageBox.Show(dialog, "Encrypted backup saved.", "Galaxy Keys");
+                Vault.AtomicWrite(picker.FileName, File.ReadAllBytes(vault.Path), false); UI.Message(dialog, "Encrypted backup saved.", "Galaxy Keys");
             }
             catch { UI.Error(dialog, "Could not save backup. Choose a location outside the Galaxy Keys data folder."); }
         }));
@@ -291,7 +349,7 @@ public sealed class MainWindow : Window
         {
             if (!vault.IsOpen) { dialog.Close(); return; }
             if (next.Password != confirm.Password) { message.Text = "Passwords do not match."; return; }
-            try { vault.ChangePassword(old.Password, next.Password); dialog.Close(); MessageBox.Show(this, "Password changed. Existing backups still use their original password.", "Galaxy Keys"); }
+            try { vault.ChangePassword(old.Password, next.Password); dialog.Close(); UI.Message(this, "Password changed. Existing backups still use their original password.", "Galaxy Keys"); }
             catch (Exception ex) { message.Text = ex is ArgumentException ? ex.Message : "Unable to change password. Check your current password."; }
         }, true)); p.Children.Add(UI.Button("Cancel", (_, _) => dialog.Close()));
         dialog.Closed += (_, _) => { old.Clear(); next.Clear(); confirm.Clear(); activeDialog = null; }; dialog.ShowDialog();

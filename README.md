@@ -2,7 +2,7 @@
 
 A local-only Windows desktop vault for API keys and website logins. No server, account, telemetry, cloud sync, or browser extension.
 
-**Status: v0.1.0 review build.** The Windows x64 executable is cross-compiled on Linux. Cryptographic and persistence checks pass; the Windows UI and real Windows Hello enrollment/unlock still require on-device verification. This is not an independently audited password manager. Start with dummy entries and confirm save, restart, unlock, backup, and recovery before storing important secrets.
+**Status: v0.1.1 preview build.** The Windows x64 executable is cross-compiled on Linux. Cryptographic and persistence checks pass; the Windows UI and real Windows Hello enrollment/unlock still require on-device verification. This is not an independently audited password manager. Start with dummy entries and confirm save, restart, unlock, backup, and recovery before storing important secrets.
 
 ## Start
 
@@ -67,4 +67,4 @@ The bundled runtime is extracted by .NET at launch as needed; vault data still r
 - Test disk-full/access-denied save failure and close/reopen; retain the last good vault.
 - Inspect network traffic and verify no application-initiated connections.
 
-MIT licensed. Repository: https://github.com/gtastories999/Galaxy-keys. The initial implementation is provided on a feature branch for review; this is not a stable release.
+MIT licensed. Repository: https://github.com/gtastories999/Galaxy-keys. This is a preview version, not a stable release.

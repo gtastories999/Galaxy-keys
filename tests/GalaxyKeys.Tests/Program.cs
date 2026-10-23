@@ -14,11 +14,11 @@ try
     Reject(() => v.Create("short"), "Reject weak master password");
     v.Create(password);
     var first = new Entry(Guid.NewGuid().ToString("N"), "API Key", "OpenAI", "", "sk-test-not-real-12345", "", DateTimeOffset.UtcNow);
-    var second = new Entry(Guid.NewGuid().ToString("N"), "Login", "Website", "ilja@example.test", "test-only-secret-password", "https://example.test", DateTimeOffset.UtcNow);
+    var second = new Entry(Guid.NewGuid().ToString("N"), "Login", "Website", "vault-user@example.test", "test-only-secret-password", "https://example.test", DateTimeOffset.UtcNow);
     v.Put(first); v.Put(second);
     var disk = File.ReadAllText(path);
     Check(!disk.Contains(first.Secret) && !disk.Contains(second.Secret) && !disk.Contains(second.Username) && !disk.Contains(first.Name), "Names, usernames, and secrets encrypted on disk");
-    Check(v.Search("OPENAI", "All items").Count() == 1 && v.Search("ilja", "All items").Count() == 1, "Case insensitive shared name / username search");
+    Check(v.Search("OPENAI", "All items").Count() == 1 && v.Search("vault-user", "All items").Count() == 1, "Case insensitive shared name / username search");
     Check(v.Search("", "API Key").Count() == 1 && v.Search("", "Login").Count() == 1, "Separate API / login lists");
     v.Lock(); Check(!v.IsOpen && v.Entries.Count == 0, "Lock removes accessible entries");
     Reject(() => v.Unlock("incorrect-password"), "Reject wrong password"); Check(!v.IsOpen, "Wrong password keeps vault locked");

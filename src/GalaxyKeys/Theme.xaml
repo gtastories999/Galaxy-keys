@@ -1,0 +1,168 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework">
+  <SolidColorBrush x:Key="GalaxyBackground" Color="#0E111A"/>
+  <SolidColorBrush x:Key="GalaxyPanel" Color="#171C29"/>
+  <SolidColorBrush x:Key="GalaxySurface" Color="#202737"/>
+  <SolidColorBrush x:Key="GalaxyBorder" Color="#343D51"/>
+  <SolidColorBrush x:Key="GalaxyText" Color="#F4F3ED"/>
+  <SolidColorBrush x:Key="GalaxyMuted" Color="#A4ADC1"/>
+  <LinearGradientBrush x:Key="GalaxyGold" StartPoint="0,0" EndPoint="1,1">
+    <GradientStop Color="#FFF3A3" Offset="0"/>
+    <GradientStop Color="#FFD84D" Offset="0.45"/>
+    <GradientStop Color="#D99A16" Offset="1"/>
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="GalaxyGoldSoft" StartPoint="0,0" EndPoint="1,1">
+    <GradientStop Color="#3E3826" Offset="0"/>
+    <GradientStop Color="#29251E" Offset="1"/>
+  </LinearGradientBrush>
+  <Style TargetType="Button">
+    <Setter Property="Foreground" Value="{StaticResource GalaxyText}"/>
+    <Setter Property="Background" Value="{StaticResource GalaxySurface}"/>
+    <Setter Property="BorderBrush" Value="#675735"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="16,11"/>
+    <Setter Property="MinHeight" Value="40"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Cursor" Value="Hand"/>
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="ButtonSurface" CornerRadius="13" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+            <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="ButtonSurface" Property="BorderBrush" Value="{StaticResource GalaxyGold}"/><Setter TargetName="ButtonSurface" Property="Opacity" Value="0.9"/></Trigger>
+            <Trigger Property="IsPressed" Value="True"><Setter TargetName="ButtonSurface" Property="Opacity" Value="0.7"/></Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="ButtonSurface" Property="BorderBrush" Value="#FFF8D4"/><Setter TargetName="ButtonSurface" Property="BorderThickness" Value="2"/></Trigger>
+            <Trigger Property="IsEnabled" Value="False"><Setter TargetName="ButtonSurface" Property="Opacity" Value="0.4"/><Setter Property="Cursor" Value="Arrow"/></Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style TargetType="TextBox">
+    <Setter Property="Foreground" Value="{StaticResource GalaxyText}"/>
+    <Setter Property="Background" Value="{StaticResource GalaxyBackground}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource GalaxyBorder}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="SelectionBrush" Value="#A17D2E"/>
+    <Setter Property="CaretBrush" Value="{StaticResource GalaxyGold}"/>
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    <Setter Property="Template"><Setter.Value>
+      <ControlTemplate TargetType="TextBox">
+        <Border x:Name="InputSurface" CornerRadius="12" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+          <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"/>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="InputSurface" Property="BorderBrush" Value="#80704A"/></Trigger>
+          <Trigger Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="InputSurface" Property="BorderBrush" Value="{StaticResource GalaxyGold}"/><Setter TargetName="InputSurface" Property="BorderThickness" Value="2"/></Trigger>
+          <Trigger Property="IsEnabled" Value="False"><Setter TargetName="InputSurface" Property="Opacity" Value="0.6"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate>
+    </Setter.Value></Setter>
+  </Style>
+  <Style TargetType="PasswordBox">
+    <Setter Property="Foreground" Value="{StaticResource GalaxyText}"/>
+    <Setter Property="Background" Value="{StaticResource GalaxyBackground}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource GalaxyBorder}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="SelectionBrush" Value="#A17D2E"/>
+    <Setter Property="CaretBrush" Value="{StaticResource GalaxyGold}"/>
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    <Setter Property="Template"><Setter.Value>
+      <ControlTemplate TargetType="PasswordBox">
+        <Border x:Name="InputSurface" CornerRadius="12" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+          <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"/>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="InputSurface" Property="BorderBrush" Value="#80704A"/></Trigger>
+          <Trigger Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="InputSurface" Property="BorderBrush" Value="{StaticResource GalaxyGold}"/><Setter TargetName="InputSurface" Property="BorderThickness" Value="2"/></Trigger>
+          <Trigger Property="IsEnabled" Value="False"><Setter TargetName="InputSurface" Property="Opacity" Value="0.6"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate>
+    </Setter.Value></Setter>
+  </Style>
+  <Style TargetType="ListBoxItem">
+    <Setter Property="Foreground" Value="{StaticResource GalaxyText}"/>
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    <Setter Property="Template"><Setter.Value>
+      <ControlTemplate TargetType="ListBoxItem">
+        <Border x:Name="ItemSurface" CornerRadius="14" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" Padding="{TemplateBinding Padding}">
+          <ContentPresenter/>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="ItemSurface" Property="Background" Value="{StaticResource GalaxySurface}"/></Trigger>
+          <Trigger Property="IsSelected" Value="True"><Setter TargetName="ItemSurface" Property="Background" Value="{StaticResource GalaxyGoldSoft}"/><Setter TargetName="ItemSurface" Property="BorderBrush" Value="{StaticResource GalaxyGold}"/></Trigger>
+          <Trigger Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="ItemSurface" Property="BorderBrush" Value="#FFF3A3"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate>
+    </Setter.Value></Setter>
+  </Style>
+  <Style TargetType="ComboBoxItem">
+    <Setter Property="Foreground" Value="{StaticResource GalaxyText}"/>
+    <Setter Property="Padding" Value="12,10"/>
+    <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ComboBoxItem">
+      <Border x:Name="OptionSurface" CornerRadius="10" Background="Transparent" Padding="{TemplateBinding Padding}"><ContentPresenter/></Border>
+      <ControlTemplate.Triggers>
+        <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="OptionSurface" Property="Background" Value="{StaticResource GalaxyGoldSoft}"/></Trigger>
+        <Trigger Property="IsSelected" Value="True"><Setter Property="Foreground" Value="#FFD84D"/></Trigger>
+      </ControlTemplate.Triggers>
+    </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="ComboBox">
+    <Setter Property="Foreground" Value="{StaticResource GalaxyText}"/>
+    <Setter Property="Background" Value="{StaticResource GalaxyBackground}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource GalaxyBorder}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ComboBox">
+      <Grid>
+        <ToggleButton Focusable="False" IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" ClickMode="Press">
+          <ToggleButton.Template><ControlTemplate TargetType="ToggleButton"><Border x:Name="ComboSurface" CornerRadius="12" Background="{StaticResource GalaxyBackground}" BorderBrush="{StaticResource GalaxyBorder}" BorderThickness="1"><Grid Margin="12,11"><ContentPresenter Content="{Binding SelectionBoxItem, RelativeSource={RelativeSource AncestorType=ComboBox}}" HorizontalAlignment="Left"/><TextBlock Text="⌄" HorizontalAlignment="Right" Foreground="#FFD84D" Margin="16,0,0,0"/></Grid></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="ComboSurface" Property="BorderBrush" Value="{StaticResource GalaxyGold}"/></Trigger></ControlTemplate.Triggers></ControlTemplate></ToggleButton.Template>
+        </ToggleButton>
+        <Border x:Name="ComboFocus" CornerRadius="12" BorderBrush="{StaticResource GalaxyGold}" BorderThickness="2" IsHitTestVisible="False" Visibility="Collapsed"/>
+        <Popup x:Name="PART_Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
+          <Border Background="{StaticResource GalaxyPanel}" BorderBrush="{StaticResource GalaxyBorder}" BorderThickness="1" CornerRadius="14" Padding="6" Margin="0,5,0,0" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"><ScrollViewer MaxHeight="260"><ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/></ScrollViewer></Border>
+        </Popup>
+      </Grid>
+      <ControlTemplate.Triggers><Trigger Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="ComboFocus" Property="Visibility" Value="Visible"/></Trigger><Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.4"/></Trigger></ControlTemplate.Triggers>
+    </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="ScrollBar">
+    <Setter Property="Width" Value="10"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ScrollBar">
+      <Grid Background="Transparent"><Track x:Name="PART_Track" IsDirectionReversed="True" Orientation="{TemplateBinding Orientation}">
+        <Track.DecreaseRepeatButton><RepeatButton x:Name="PageDecrease" Command="ScrollBar.PageUpCommand" Focusable="False"><RepeatButton.Template><ControlTemplate TargetType="RepeatButton"><Border Background="Transparent"/></ControlTemplate></RepeatButton.Template></RepeatButton></Track.DecreaseRepeatButton>
+        <Track.Thumb><Thumb><Thumb.Template><ControlTemplate TargetType="Thumb"><Border CornerRadius="5" Background="#566078" Margin="2"/></ControlTemplate></Thumb.Template></Thumb></Track.Thumb>
+        <Track.IncreaseRepeatButton><RepeatButton x:Name="PageIncrease" Command="ScrollBar.PageDownCommand" Focusable="False"><RepeatButton.Template><ControlTemplate TargetType="RepeatButton"><Border Background="Transparent"/></ControlTemplate></RepeatButton.Template></RepeatButton></Track.IncreaseRepeatButton>
+      </Track></Grid>
+      <ControlTemplate.Triggers><Trigger Property="Orientation" Value="Horizontal"><Setter Property="Width" Value="Auto"/><Setter Property="Height" Value="10"/><Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False"/><Setter TargetName="PageDecrease" Property="Command" Value="ScrollBar.PageLeftCommand"/><Setter TargetName="PageIncrease" Property="Command" Value="ScrollBar.PageRightCommand"/></Trigger></ControlTemplate.Triggers>
+    </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style x:Key="GalaxyWindow" TargetType="Window">
+    <Setter Property="WindowStyle" Value="None"/>
+    <Setter Property="Background" Value="{StaticResource GalaxyBackground}"/>
+    <Setter Property="Foreground" Value="{StaticResource GalaxyText}"/>
+    <Setter Property="FontFamily" Value="Segoe UI"/>
+    <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Window">
+      <Border Margin="{TemplateBinding Padding}" CornerRadius="20" Background="{TemplateBinding Background}" BorderBrush="#434333" BorderThickness="1">
+        <Grid Margin="1"><Grid.RowDefinitions><RowDefinition Height="48"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+          <Border CornerRadius="18,18,0,0" Background="{StaticResource GalaxyPanel}"><Grid Margin="16,0,8,0"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Image AutomationProperties.Name="Galaxy Keys gold 3D logo" Source="Assets/galaxy-keys-logo.png" Width="26" Height="26" Margin="0,0,10,0"/><TextBlock Text="{TemplateBinding Title}" FontWeight="SemiBold" Foreground="{StaticResource GalaxyText}" VerticalAlignment="Center"/></StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" shell:WindowChrome.IsHitTestVisibleInChrome="True">
+              <Button x:Name="GalaxyMinimize" AutomationProperties.Name="Minimize window" Content="−" Width="34" MinHeight="30" Padding="0" Margin="2,8" ToolTip="Minimize"/>
+              <Button x:Name="GalaxyMaximize" AutomationProperties.Name="Maximize or restore window" Content="□" Width="34" MinHeight="30" Padding="0" Margin="2,8" ToolTip="Maximize or restore"/>
+              <Button x:Name="GalaxyClose" AutomationProperties.Name="Close window" Content="×" Width="34" MinHeight="30" Padding="0" Margin="2,8" ToolTip="Close"/>
+            </StackPanel>
+          </Grid></Border>
+          <AdornerDecorator Grid.Row="1"><ContentPresenter Content="{TemplateBinding Content}"/></AdornerDecorator>
+        </Grid>
+      </Border>
+      <ControlTemplate.Triggers><Trigger Property="ResizeMode" Value="NoResize"><Setter TargetName="GalaxyMinimize" Property="Visibility" Value="Collapsed"/><Setter TargetName="GalaxyMaximize" Property="Visibility" Value="Collapsed"/></Trigger><Trigger Property="WindowState" Value="Maximized"><Setter Property="Padding" Value="8"/></Trigger></ControlTemplate.Triggers>
+    </ControlTemplate></Setter.Value></Setter>
+  </Style>
+</ResourceDictionary>
