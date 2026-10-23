@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+dist/
+*.gkv
+*.gkv.bak
+*.hello
+*.tmp
+*.pdb

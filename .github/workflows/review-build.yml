@@ -1,0 +1,20 @@
+name: Windows review build
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  test-and-build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Core security and persistence checks
+        run: dotnet run --project tests/GalaxyKeys.Tests
+      - name: Publish portable EXE
+        run: dotnet publish src/GalaxyKeys -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GalaxyKeys-Windows-x64-review
+          path: dist/GalaxyKeys.exe
