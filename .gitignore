@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+dist/
+dist-brand/
+*.gkv
+*.gkv.bak
+*.hello
+*.tmp
+*.pdb
+
+# Local contributor instructions and private working notes
+AGENTS.md
+BRAND.md

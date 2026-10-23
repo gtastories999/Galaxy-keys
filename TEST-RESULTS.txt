@@ -1,0 +1,22 @@
+PASS: Reject weak master password
+PASS: Names, usernames, and secrets encrypted on disk
+PASS: Case insensitive shared name / username search
+PASS: Separate API / login lists
+PASS: Lock removes accessible entries
+PASS: Reject wrong password
+PASS: Wrong password keeps vault locked
+PASS: Reopen persisted vault
+PASS: Fresh encryption nonce for every save
+PASS: Previous-save backup decrypts
+PASS: Reject tampered payload
+PASS: Reject tampered header
+PASS: Reject hostile KDF parameters before expensive derivation
+PASS: Device-wrapped key path decrypts same vault
+PASS: Password change verifies current password
+PASS: Old password rejected after change
+PASS: Password change preserves entries
+PASS: Edit updates item without duplicating
+PASS: Deletion persists
+PASS: Save failure is reported
+PASS: Failed save rolls back in-memory mutation
+21 checks passed.
